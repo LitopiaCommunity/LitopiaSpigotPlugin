@@ -1,0 +1,50 @@
+
+
+plugins {
+    id 'java'
+    //id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+group 'fr.litopia'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://plugins.gradle.org/m2/'}
+    maven { url 'https://maven.fabric.io/public' }
+    mavenLocal()
+}
+
+configurations {
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+
+dependencies {
+    //classpath ('com.github.jengelman.gradle.plugins:shadow:5.2.0')
+    //testCompile "junit:junit:4.11"
+    compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
+    extraLibs  (group: 'org.postgresql', name: 'postgresql', version: '42.2.14')
+    extraLibs  (group:'org.xerial', name:'sqlite-jdbc', version:'3.8.11.2')
+    extraLibs  (group:'club.minnced',name:'discord-webhooks', version:'0.3.1')
+    extraLibs  ("net.dv8tion:JDA:4.1.1_165") {
+        exclude module: "opus-java"
+    }
+    configurations.compile.extendsFrom(configurations.extraLibs)
+}
+
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+jar.setDestinationDir(new File("D:\\DEVMCSERVEUR\\plugins"))
+
+//apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'

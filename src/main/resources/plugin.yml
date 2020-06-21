@@ -1,0 +1,5 @@
+name: LitopiaServices
+description: Litopia conect services
+version: 1.0
+api-version: 1.15
+main: fr.litopia.bukkit.Main
