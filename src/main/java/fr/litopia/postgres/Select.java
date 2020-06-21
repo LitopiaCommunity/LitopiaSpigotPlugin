@@ -44,7 +44,6 @@ public class Select {
     }
     
     public String getMcNicknameFomDiscordID(String discordID) throws SQLException {
-        System.out.println(discordID);
         String SQL = "Select minecraftnickname from members where iddiscord = (?) and acceptedate is null;";
         PreparedStatement pstmt = this.conn.prepareStatement(SQL);
         pstmt.setString(1,discordID);

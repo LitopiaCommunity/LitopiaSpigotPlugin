@@ -35,17 +35,21 @@ public class AcceptCandidature extends ListenerAdapter {
         this.U = new Update(db.connect());
     }
 
-    @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split("\\s+");
         if (event.getAuthor().isBot()) return;
         if (event.getChannel().getIdLong() == tchatChanID) return;
         if (args[0].equalsIgnoreCase(prefix + "acceptUser")) {
             if (event.getGuild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
-                System.out.println(prefix + "acceptUser =" + args[0]);
                 if (event.getMessage().getMentionedUsers().size() == 1) {
                     try {
-                        String nickname = S.getMcNicknameFomDiscordID(event.getMessage().getMentionedUsers().get(0).getId());
+                        String nickname ="";
+                        try {
+                            nickname = S.getMcNicknameFomDiscordID(event.getMessage().getMentionedUsers().get(0).getId());
+                        }catch (SQLException e){
+                            event.getChannel().sendMessage("**:warning: <@"+event.getMessage().getMentionedUsers().get(0).getId()+"> n'est pas dans la BDD ou est déjà Litopien**\n`"+e.getMessage()+"`").queue();
+                            return;
+                        }
                         Member member = event.getGuild().getMemberById(event.getMessage().getMentionedUsers().get(0).getId());
                         event.getMessage().getMentionedUsers().get(0).openPrivateChannel().flatMap(channel -> channel.sendMessage(":white_check_mark: **Génial, tu est accepter dans la communauté litopienne. Tu peux d'ésaprésent découvrir les autre joueur si cela n'est pas deja faite et venir jouée sur le serveur avec l'IP suivante: `play.litopia.fr`.**")).queue();
                         member.getGuild().addRoleToMember(member,member.getGuild().getRoleById("390447376986275842")).queue();
