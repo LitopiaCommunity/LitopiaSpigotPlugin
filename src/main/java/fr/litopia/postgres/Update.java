@@ -5,9 +5,8 @@ import fr.litopia.bukkit.models.EntityData;
 import fr.litopia.bukkit.models.MaterialData;
 import fr.litopia.bukkit.models.PlayerStats;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.sql.Date;
 
 public class Update {
     private Connection conn;
@@ -16,6 +15,18 @@ public class Update {
         this.conn = con;
     }
 
+    public void acceptMembers(String discordID) throws SQLException {
+        String SQL = "update members" +
+                " set acceptedate = (?)," +
+                " roleName = (?)" +
+                " where idDiscord = (?)";
+
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        pstmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+        pstmt.setString(2,"Litopien");
+        pstmt.setString(3,discordID);
+        pstmt.executeUpdate();
+    }
 
     public void updateMemberStats(PlayerStats playerStats) throws SQLException {
         String SQL = "update members" +

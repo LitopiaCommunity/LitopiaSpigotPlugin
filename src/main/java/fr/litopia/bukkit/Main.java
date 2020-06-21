@@ -1,6 +1,7 @@
 package fr.litopia.bukkit;
 
 
+import fr.litopia.bot.commands.AcceptCandidature;
 import fr.litopia.bot.commands.Stats;
 import fr.litopia.bot.event.TchatEvent;
 import fr.litopia.bukkit.listener.BukkitListener;
@@ -89,6 +90,7 @@ public class Main extends JavaPlugin {
             this.jda = new JDABuilder(AccountType.BOT).setToken(config.getString("token")).addEventListeners(new TchatEvent(this)).build();
             this.tchatEvent = new TchatEvent(this);
             this.jda.addEventListener(new Stats(this));
+            this.jda.addEventListener(new AcceptCandidature(this));
         } catch (LoginException e) {
             e.printStackTrace();
         }
