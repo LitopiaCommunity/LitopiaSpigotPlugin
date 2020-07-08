@@ -131,4 +131,13 @@ public class Select {
         ResultSet rs = pstmt.executeQuery();
         return rs;
     }
+
+    public ResultSet getMemberFromDiscordID(String discordID) throws SQLException {
+        String SQL = "Select * from members where iddiscord = (?);";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        pstmt.setString(1,discordID);
+        ResultSet rs = pstmt.executeQuery();
+        rs.next();
+        return rs;
+    }
 }

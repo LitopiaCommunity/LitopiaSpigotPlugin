@@ -11,7 +11,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 public class RejectCandidature extends ListenerAdapter {
 
@@ -39,31 +41,33 @@ public class RejectCandidature extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "rejectUser")) {
             if (event.getGuild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
                 if (event.getMessage().getMentionedUsers().size() == 1) {
+                    ResultSet member;
                     try {
-                        String nickname ="";
-                        try {
-                            nickname = S.getMcNicknameFomDiscordID(event.getMessage().getMentionedUsers().get(0).getId());
-                        }catch (SQLException e){
-                            event.getChannel().sendMessage("**:warning: <@"+event.getMessage().getMentionedUsers().get(0).getId()+"> n'est pas dans la BDD ou est déjà Litopien**\n`"+e.getMessage()+"`").queue();
-                            return;
+                        member = S.getMemberFromDiscordID(event.getMessage().getMentionedUsers().get(0).getId());
+                        System.out.println(member.getString("rolename"));
+                        if (member.getDate("acceptedate") == null){
+                            if (member.getString("rolename")==null){
+                                Member discordMember = event.getGuild().getMemberById(event.getMessage().getMentionedUsers().get(0).getId());
+                                //Envois un message de refu
+                                event.getMessage().getMentionedUsers().get(0).openPrivateChannel().flatMap(channel -> channel.sendMessage(":x: **Désoler mais tu est definitivement refusée de litopia**")).queue();
+                                //supretion de tous c'est roles
+                                for (Role r:discordMember.getRoles()) {
+                                    discordMember.getGuild().removeRoleFromMember(discordMember,r).queue();
+                                }
+                                //Ajout du role refusée
+                                discordMember.getGuild().addRoleToMember(discordMember,discordMember.getGuild().getRoleById("482281139609010187")).queue();
+                                //envois du message de validation au modo
+                                event.getChannel().sendMessage("**:white_check_mark: le membre à bien était refuser**").queue();
+                                //Mise à jour de la BDD
+                                U.rejectMembers(discordMember.getId());
+                            }else{
+                                event.getChannel().sendMessage("**:warning: <@"+event.getMessage().getMentionedUsers().get(0).getId()+"> à déjà été refusée**").queue();
+                            }
+                        }else{
+                            event.getChannel().sendMessage("**:warning: <@"+event.getMessage().getMentionedUsers().get(0).getId()+"> à déjà était accépter car il et litopien**").queue();
                         }
-                        //recupération du membre mentionée
-                        Member member = event.getGuild().getMemberById(event.getMessage().getMentionedUsers().get(0).getId());
-                        //Envois un message de refu
-                        event.getMessage().getMentionedUsers().get(0).openPrivateChannel().flatMap(channel -> channel.sendMessage(":x: **Désoler mais tu est definitivement refusée de litopia**")).queue();
-                        //supretion de tous c'est roles
-                        for (Role r:member.getRoles()) {
-                            member.getGuild().removeRoleFromMember(member,r).queue();
-                        }
-                        //Ajout du role refusée
-                        member.getGuild().addRoleToMember(member,member.getGuild().getRoleById("482281139609010187")).queue();
-                        //envois du message de validation au modo
-                        event.getChannel().sendMessage("**:white_check_mark: le membre à bien était refuser**").queue();
-                        //Mise à jour de la BDD
-                        U.rejectMembers(member.getId());
-                    } catch (Exception e) {
-                        event.getChannel().sendMessage("**:warning: Une erreur inatendu c'est produite**\n`"+e.getMessage()+"`").queue();
-                        e.printStackTrace();
+                    }catch (SQLException e){
+                        event.getChannel().sendMessage("**:warning: <@"+event.getMessage().getMentionedUsers().get(0).getId()+"> n'est pas dans la BDD**\n`"+e.getMessage()+"`").queue();
                     }
                 } else {
                     event.getChannel().sendMessage("**:warning: Veuillez mentioner la personne à ejecter de litopia**").queue();

@@ -10,7 +10,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 public class AcceptCandidature extends ListenerAdapter {
     private static final long MILLI_PER_TICK = 1 / 20;
@@ -39,33 +41,35 @@ public class AcceptCandidature extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "acceptUser")) {
             if (event.getGuild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
                 if (event.getMessage().getMentionedUsers().size() == 1) {
+                    ResultSet member;
                     try {
-                        String nickname ="";
-                        try {
-                            nickname = S.getMcNicknameFomDiscordID(event.getMessage().getMentionedUsers().get(0).getId());
-                        }catch (SQLException e){
-                            event.getChannel().sendMessage("**:warning: <@"+event.getMessage().getMentionedUsers().get(0).getId()+"> n'est pas dans la BDD ou est déjà Litopien**\n`"+e.getMessage()+"`").queue();
-                            return;
-                        }
-                        Member member = event.getGuild().getMemberById(event.getMessage().getMentionedUsers().get(0).getId());
-                        event.getMessage().getMentionedUsers().get(0).openPrivateChannel().flatMap(channel -> channel.sendMessage(":white_check_mark: **Génial, tu est accepter dans la communauté litopienne. Tu peux d'ésaprésent découvrir les autre joueur si cela n'est pas deja faite et venir jouée sur le serveur avec l'IP suivante: `play.litopia.fr`.**")).queue();
-                        //supretion de tous c'est roles
-                        for (Role r:member.getRoles()) {
-                            member.getGuild().removeRoleFromMember(member,r).queue();
-                        }
-                        member.getGuild().addRoleToMember(member,member.getGuild().getRoleById("390447376986275842")).queue();
-                        U.acceptMembers(member.getId());
-                        plugin.addToWhiteListe(nickname);
-                        event.getChannel().sendMessage("**:white_check_mark: le membre à bien était ajouter à la whiteliste**").queue();
+                        member = S.getMemberFromDiscordID(event.getMessage().getMentionedUsers().get(0).getId());
+                        if (member.getDate("acceptedate") == null) {
+                            if (member.getString("rolename")== null) {
+                                Member discordMember = event.getGuild().getMemberById(event.getMessage().getMentionedUsers().get(0).getId());
+                                event.getMessage().getMentionedUsers().get(0).openPrivateChannel().flatMap(channel -> channel.sendMessage(":white_check_mark: **Génial, tu est accepter dans la communauté litopienne. Tu peux d'ésaprésent découvrir les autre joueur si cela n'est pas deja faite et venir jouée sur le serveur avec l'IP suivante: `play.litopia.fr`.**")).queue();
+                                //supretion de tous c'est roles
+                                for (Role r : discordMember.getRoles()) {
+                                    discordMember.getGuild().removeRoleFromMember(discordMember, r).queue();
+                                }
+                                discordMember.getGuild().addRoleToMember(discordMember, discordMember.getGuild().getRoleById("390447376986275842")).queue();
+                                U.acceptMembers(discordMember.getId());
+                                plugin.addToWhiteListe(member.getString("minecraftnickname"));
+                                event.getChannel().sendMessage("**:white_check_mark: le membre à bien était ajouter à la whiteliste**").queue();
 
-                    } catch (Exception e) {
-                        event.getChannel().sendMessage("**:warning: Une erreur inatendu c'est produite**\n`"+e.getMessage()+"`").queue();
-                        e.printStackTrace();
+                            } else {
+                                event.getChannel().sendMessage("**:warning: <@" + event.getMessage().getMentionedUsers().get(0).getId() + "> à été refusée et ne peut être accepter.**").queue();
+                            }
+                        } else {
+                            event.getChannel().sendMessage("**:warning: <@" + event.getMessage().getMentionedUsers().get(0).getId() + "> à déjà était accépter car il et litopien**").queue();
+                        }
+                    } catch (SQLException | ExecutionException | InterruptedException e) {
+                        event.getChannel().sendMessage("**:warning: <@" + event.getMessage().getMentionedUsers().get(0).getId() + "> n'est pas dans la BDD**\n`" + e.getMessage() + "`").queue();
                     }
                 } else {
                     event.getChannel().sendMessage("**:warning: Veuillez mentioner la personne à accepter sur litopia**").queue();
                 }
-            }else{
+            } else {
                 event.getChannel().sendMessage("**:warning: Vous n'avez pas la permission d'executer la commande**").queue();
             }
         }
