@@ -28,6 +28,17 @@ public class Update {
         pstmt.executeUpdate();
     }
 
+    public void rejectMembers(String discordID) throws SQLException {
+        String SQL = "update members" +
+                " set roleName = (?)" +
+                " where idDiscord = (?)";
+
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        pstmt.setString(1,"Refuser");
+        pstmt.setString(2,discordID);
+        pstmt.executeUpdate();
+    }
+
     public void updateMemberStats(PlayerStats playerStats) throws SQLException {
         String SQL = "update members" +
                 " set minecraftnickname = (?)," +

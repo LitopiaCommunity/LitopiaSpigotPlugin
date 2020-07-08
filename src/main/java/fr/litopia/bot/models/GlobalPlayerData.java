@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,6 +34,23 @@ public class GlobalPlayerData {
     private float TotalParcourDistance;
     private ArrayList<GlobalEntityData> EntityStats;
     private ArrayList<GlobalItemData> ItemStats;
+    private Connection con;
+
+    public GlobalPlayerData(Main plugin, String minecraftUUID, String DiscordID) throws Exception {
+        this.discordID = DiscordID;
+        this.minecraftUUID = UUID.fromString(minecraftUUID.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})","$1-$2-$3-$4-$5"));
+        this.plugin = plugin;
+        this.dbConn = this.plugin.config.getString("postgresConnString");
+        this.player = Bukkit.getPlayer(this.minecraftUUID);
+
+        this.EntityStats = new ArrayList<GlobalEntityData>();
+        this.ItemStats = new ArrayList<GlobalItemData>();
+        if (player == null){
+            setDataFromDataBase();
+        }else{
+            setDataFromPlayer();
+        }
+    }
 
     public GlobalPlayerData(Main plugin, String MinecraftUsername) throws Exception {
         this.plugin = plugin;

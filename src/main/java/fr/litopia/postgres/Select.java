@@ -124,4 +124,11 @@ public class Select {
         rs.next();
         return rs;
     }
+
+    public ResultSet getAllMembers() throws SQLException {
+        String SQL = "Select * from members where acceptedate is not null";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs = pstmt.executeQuery();
+        return rs;
+    }
 }

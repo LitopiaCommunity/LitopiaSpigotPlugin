@@ -1,15 +1,14 @@
 package fr.litopia.bot.commands;
 
 import fr.litopia.bot.models.GlobalPlayerData;
+import fr.litopia.bot.models.SimplePlayerData;
+import fr.litopia.bot.models.SimplePlayersCollection;
 import fr.litopia.bukkit.Main;
 import fr.litopia.postgres.DBConnection;
 import fr.litopia.postgres.Select;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
-import java.util.concurrent.ExecutionException;
 
 public class Stats extends ListenerAdapter {
     private static final long MILLI_PER_TICK = 1 / 20;

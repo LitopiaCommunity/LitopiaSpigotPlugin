@@ -5,38 +5,38 @@ import fr.litopia.postgres.DBConnection;
 import fr.litopia.postgres.Select;
 import fr.litopia.postgres.Update;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;
 
-public class AcceptCandidature extends ListenerAdapter {
-    private static final long MILLI_PER_TICK = 1 / 20;
+public class RejectCandidature extends ListenerAdapter {
+
+    private static Select S;
+    private static Update U;
     private static long tchatChanID;
     private static String prefix;
-    private static String dbConn;
     private static Main plugin;
-    private DBConnection db;
-    private Select S;
-    private Update U;
+    private final DBConnection db;
 
-    public AcceptCandidature(Main main){
+    public RejectCandidature(Main main) {
         tchatChanID = main.config.getLong("tchatChanelID");
         prefix = main.config.getString("prefix");
-        dbConn = main.config.getString("postgresConnString");
+        String dbConn = main.config.getString("postgresConnString");
         plugin = main;
         this.db = new DBConnection(dbConn);
-        this.S = new Select(db.connect());
-        this.U = new Update(db.connect());
+        S = new Select(db.connect());
+        U = new Update(db.connect());
     }
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split("\\s+");
         if (event.getAuthor().isBot()) return;
         if (event.getChannel().getIdLong() == tchatChanID) return;
-        if (args[0].equalsIgnoreCase(prefix + "acceptUser")) {
+        if (args[0].equalsIgnoreCase(prefix + "rejectUser")) {
             if (event.getGuild().getMember(event.getAuthor()).hasPermission(Permission.BAN_MEMBERS)) {
                 if (event.getMessage().getMentionedUsers().size() == 1) {
                     try {
@@ -47,23 +47,26 @@ public class AcceptCandidature extends ListenerAdapter {
                             event.getChannel().sendMessage("**:warning: <@"+event.getMessage().getMentionedUsers().get(0).getId()+"> n'est pas dans la BDD ou est déjà Litopien**\n`"+e.getMessage()+"`").queue();
                             return;
                         }
+                        //recupération du membre mentionée
                         Member member = event.getGuild().getMemberById(event.getMessage().getMentionedUsers().get(0).getId());
-                        event.getMessage().getMentionedUsers().get(0).openPrivateChannel().flatMap(channel -> channel.sendMessage(":white_check_mark: **Génial, tu est accepter dans la communauté litopienne. Tu peux d'ésaprésent découvrir les autre joueur si cela n'est pas deja faite et venir jouée sur le serveur avec l'IP suivante: `play.litopia.fr`.**")).queue();
+                        //Envois un message de refu
+                        event.getMessage().getMentionedUsers().get(0).openPrivateChannel().flatMap(channel -> channel.sendMessage(":x: **Désoler mais tu est definitivement refusée de litopia**")).queue();
                         //supretion de tous c'est roles
                         for (Role r:member.getRoles()) {
                             member.getGuild().removeRoleFromMember(member,r).queue();
                         }
-                        member.getGuild().addRoleToMember(member,member.getGuild().getRoleById("390447376986275842")).queue();
-                        U.acceptMembers(member.getId());
-                        plugin.addToWhiteListe(nickname);
-                        event.getChannel().sendMessage("**:white_check_mark: le membre à bien était ajouter à la whiteliste**").queue();
-
+                        //Ajout du role refusée
+                        member.getGuild().addRoleToMember(member,member.getGuild().getRoleById("482281139609010187")).queue();
+                        //envois du message de validation au modo
+                        event.getChannel().sendMessage("**:white_check_mark: le membre à bien était refuser**").queue();
+                        //Mise à jour de la BDD
+                        U.rejectMembers(member.getId());
                     } catch (Exception e) {
                         event.getChannel().sendMessage("**:warning: Une erreur inatendu c'est produite**\n`"+e.getMessage()+"`").queue();
                         e.printStackTrace();
                     }
                 } else {
-                    event.getChannel().sendMessage("**:warning: Veuillez mentioner la personne à accepter sur litopia**").queue();
+                    event.getChannel().sendMessage("**:warning: Veuillez mentioner la personne à ejecter de litopia**").queue();
                 }
             }else{
                 event.getChannel().sendMessage("**:warning: Vous n'avez pas la permission d'executer la commande**").queue();

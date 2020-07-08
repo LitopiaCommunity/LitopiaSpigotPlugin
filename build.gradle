@@ -46,7 +46,7 @@ jar {
 
 compileJava.options.encoding = 'UTF-8'
 
-jar.setDestinationDir(new File("D:\\DEVMCSERVEUR\\plugins"))
+jar.setDestinationDir(new File("E:\\Louis\\DEVMCSERVEUR\\plugins"))
 
 //apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
