@@ -1,10 +1,7 @@
 package fr.litopia.bukkit;
 
 
-import fr.litopia.bot.commands.AcceptCandidature;
-import fr.litopia.bot.commands.Leaderboard;
-import fr.litopia.bot.commands.RejectCandidature;
-import fr.litopia.bot.commands.Stats;
+import fr.litopia.bot.commands.*;
 import fr.litopia.bot.event.TchatEvent;
 import fr.litopia.bukkit.listener.BukkitListener;
 import fr.litopia.bukkit.models.EntityData;
@@ -95,6 +92,7 @@ public class Main extends JavaPlugin {
             this.jda.addEventListener(new AcceptCandidature(this));
             this.jda.addEventListener(new Leaderboard(this));
             this.jda.addEventListener(new RejectCandidature(this));
+            this.jda.addEventListener(new ResetCandidature(this));
         } catch (LoginException e) {
             e.printStackTrace();
         }
