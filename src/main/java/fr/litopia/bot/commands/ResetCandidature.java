@@ -30,7 +30,8 @@ public class ResetCandidature extends ListenerAdapter {
         dbConn = main.config.getString("postgresConnString");
         plugin = main;
         this.db = new DBConnection(dbConn);
-        this.S = new Select(db.connect());
+        S = new Select(db.connect());
+        D = new Delete(db.connect());
     }
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -53,7 +54,16 @@ public class ResetCandidature extends ListenerAdapter {
                                     for (Role r : discordMember.getRoles()) {
                                         discordMember.getGuild().removeRoleFromMember(discordMember, r).queue();
                                     }
-                                    D.deleteCandidatureFromDiscordID(discordMember.getId());
+                                    //Ajout du role en attente de candidature au membre
+                                    discordMember.getGuild().addRoleToMember(discordMember, discordMember.getGuild().getRoleById("482612660962197544")).queue();
+
+                                    //supression du membre de la BDD
+                                    try {
+                                        D.deleteCandidatureFromDiscordID(discordMember.getId());
+                                    }catch (SQLException e){
+                                        e.printStackTrace();
+                                    }
+                                    //envois du message de confirmation à l'admin
                                     event.getChannel().sendMessage("**:white_check_mark: le membre à maintenant le droit à une deuxième chance**").queue();
                                 } else {
                                     event.getChannel().sendMessage("**:warning: <@" + event.getMessage().getMentionedUsers().get(0).getId() + "> doit être refusée pour avoirs le droit à une deuxiéme chance.**").queue();
