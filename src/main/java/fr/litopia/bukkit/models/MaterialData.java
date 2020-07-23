@@ -20,6 +20,11 @@ public class MaterialData {
         this.name = name;
     }
 
+    public MaterialData(String name){
+        this.mat = Material.matchMaterial(name);
+        this.name = name;
+    }
+
     public Material getMat() {
         return mat;
     }
@@ -37,11 +42,19 @@ public class MaterialData {
         this.mineStat = this.player.getStatistic(Statistic.MINE_BLOCK,this.mat);
     }
 
+    public void setStat(int BREAK_ITEM, int CRAFT_ITEM, int USE_ITEM, int MINE_BLOCK){
+        this.player = null;
+        this.brokenStat = BREAK_ITEM;
+        this.craftStat = CRAFT_ITEM;
+        this.useStat = USE_ITEM;
+        this.mineStat = MINE_BLOCK;
+    }
+
     public Player getPlayer() {
         return player;
     }
 
-    public int getMinestat() {
+    public int getMineStat() {
         return mineStat;
     }
 

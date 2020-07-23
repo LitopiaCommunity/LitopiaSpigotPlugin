@@ -47,7 +47,7 @@ public class Insert {
         pstmt.setString(3,materialData.getName());
         pstmt.setInt(4,materialData.getCraftStat());
         pstmt.setInt(5,materialData.getUseStat());
-        pstmt.setInt(6,materialData.getMinestat());
+        pstmt.setInt(6,materialData.getMineStat());
         pstmt.setInt(7,materialData.getBrokenStat());
         pstmt.executeUpdate();
     }

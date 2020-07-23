@@ -6,7 +6,6 @@ import fr.litopia.bukkit.models.MaterialData;
 import fr.litopia.bukkit.models.PlayerStats;
 import fr.litopia.postgres.DBConnection;
 import fr.litopia.postgres.Select;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -46,7 +45,8 @@ public class GlobalPlayerData {
         this.EntityStats = new ArrayList<GlobalEntityData>();
         this.ItemStats = new ArrayList<GlobalItemData>();
         if (player == null){
-            setDataFromDataBase();
+            Bukkit.getOfflinePlayer(this.minecraftUUID);
+            setDataFromPlayer();
         }else{
             setDataFromPlayer();
         }
@@ -64,11 +64,10 @@ public class GlobalPlayerData {
         this.EntityStats = new ArrayList<GlobalEntityData>();
         this.ItemStats = new ArrayList<GlobalItemData>();
 
-        if (player == null){
-            setDataFromDataBase();
-        }else{
-            setDataFromPlayer();
+        if (player == null) {
+            Bukkit.getOfflinePlayer(this.minecraftUUID);
         }
+        setDataFromPlayer();
     }
 
     public GlobalPlayerData(String discordID,Main plugin) throws Exception {
@@ -77,7 +76,9 @@ public class GlobalPlayerData {
         this.dbConn = this.plugin.config.getString("postgresConnString");
         DBConnection db = new DBConnection(dbConn);
         Select S = new Select(db.connect());
+        System.out.println(this.discordID);
         this.minecraftUUID = UUID.fromString(S.getMinecraftUUID(this.discordID));
+        System.out.println(this.minecraftUUID);
         this.player = Bukkit.getPlayer(this.minecraftUUID);
 
         this.EntityStats = new ArrayList<GlobalEntityData>();
@@ -122,8 +123,8 @@ public class GlobalPlayerData {
     }
 
     private void generateItemStats(PlayerStats PS){
-        for (MaterialData materialData: PS.getItemStatCollection()) {
-            this.ItemStats.add(new GlobalItemData(materialData.getName(),materialData.getMinestat(),materialData.getBrokenStat(),materialData.getCraftStat(),materialData.getUseStat()));
+        for (MaterialData materialData: PS.getItemStats()) {
+            this.ItemStats.add(new GlobalItemData(materialData.getName(),materialData.getMineStat(),materialData.getBrokenStat(),materialData.getCraftStat(),materialData.getUseStat()));
         }
     }
 
@@ -140,7 +141,7 @@ public class GlobalPlayerData {
     }
 
     private void generateMobStats(PlayerStats PS){
-        for (EntityData entityData:PS.getEntityCollection()) {
+        for (EntityData entityData:PS.getEntityStats()) {
             this.EntityStats.add(new GlobalEntityData(entityData.getName(),entityData.getKillEntity(),entityData.getEntityKilledBy()));
         }
     }

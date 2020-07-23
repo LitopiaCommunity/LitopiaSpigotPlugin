@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Select {
     private Connection conn;
@@ -100,6 +101,15 @@ public class Select {
         PreparedStatement pstmt = this.conn.prepareStatement(SQL);
         pstmt.setString(1,discordID);
         pstmt.setString(2,minecraftUUID.replaceAll("-",""));
+        ResultSet rs = pstmt.executeQuery();
+        rs.next();
+        return rs;
+    }
+
+    public ResultSet getMemberData(String discordID) throws SQLException {
+        String SQL = "Select * from members where iddiscord = (?) and acceptedate is not null;";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        pstmt.setString(1,discordID);
         ResultSet rs = pstmt.executeQuery();
         rs.next();
         return rs;

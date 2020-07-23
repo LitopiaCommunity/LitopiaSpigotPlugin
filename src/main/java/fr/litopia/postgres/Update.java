@@ -1,12 +1,10 @@
 package fr.litopia.postgres;
 
-import fr.litopia.bukkit.Main;
 import fr.litopia.bukkit.models.EntityData;
 import fr.litopia.bukkit.models.MaterialData;
 import fr.litopia.bukkit.models.PlayerStats;
 
 import java.sql.*;
-import java.sql.Date;
 
 public class Update {
     private Connection conn;
@@ -44,23 +42,60 @@ public class Update {
                 " set minecraftnickname = (?)," +
                 " playTime = (?)," +
                 " timeSinceLastDeath = (?)," +
+                " playTimeTick = (?)," +
+                " timeSinceLastDeathTick = (?)," +
                 " numberDeath = (?)," +
                 " numberJump = (?)," +
                 " totalMobKill = (?)," +
                 " totalPlayerKill = (?)," +
-                " totalParcourDistance = (?)" +
+                " totalParcourDistance = (?)," +
+                " totalParcourDistanceTransportation = (?)," +
+                " totalAdvancement = (?)," +
+                " damageTaken = (?)," +
+                " damageDealt = (?)," +
+                " damageBlockedByShield = (?)," +
+                " raidWon = (?)," +
+                " tradedWithVillager = (?)," +
+                " animalBred = (?)," +
+                " fishCaught = (?)," +
+                " totalMineStat = (?)," +
+                " totalCraftStat = (?)," +
+                " totalUseStat = (?)," +
+                " totalKillEntity = (?)," +
+                " totalEntityKilledBy = (?)," +
+                " totalScore = (?)," +
+                " lastUpdate = now()" +
                 " where idDiscord = (?) and minecraftUUID = (?) and acceptedate is not null" ;
+        System.out.println(playerStats.getDiscordID());
+        System.out.println(playerStats.getPlayerUUID());
         PreparedStatement pstmt = this.conn.prepareStatement(SQL);
         pstmt.setString(1,playerStats.getUsername());
         pstmt.setString(2,playerStats.getTimePlayedInString());
         pstmt.setString(3,playerStats.getTimeSinceLastDeathInString());
-        pstmt.setInt(4,playerStats.getTotalDeath());
-        pstmt.setInt(5,playerStats.getTotalJump());
-        pstmt.setInt(6,playerStats.getTotalMobKill());
-        pstmt.setInt(7,playerStats.getTotalPlayerKill());
-        pstmt.setFloat(8,playerStats.getTotalDistanceFloat());
-        pstmt.setString(9,playerStats.getDiscordID());
-        pstmt.setString(10,playerStats.getPlayerUUID());
+        pstmt.setInt(4,playerStats.getTimePlayed());
+        pstmt.setInt(5,playerStats.getTimeSinceLastDeath());
+        pstmt.setInt(6,playerStats.getTotalDeath());
+        pstmt.setInt(7,playerStats.getTotalJump());
+        pstmt.setInt(8,playerStats.getTotalMobKill());
+        pstmt.setInt(9,playerStats.getTotalPlayerKill());
+        pstmt.setFloat(10,playerStats.getTotalDistanceFloat());
+        pstmt.setFloat(11,playerStats.getTotalDistanceTransportationFloat());
+        pstmt.setInt(12,playerStats.getTotalAdvancement());
+        pstmt.setFloat(13,playerStats.getDamageTaken());
+        pstmt.setFloat(14,playerStats.getDamageDealt());
+        pstmt.setFloat(15,playerStats.getDamageBlockedByShield());
+        pstmt.setInt(16,playerStats.getRaidWon());
+        pstmt.setInt(17,playerStats.getTradedWithVillager());
+        pstmt.setInt(18,playerStats.getAnimalBred());
+        pstmt.setInt(19,playerStats.getFishCaught());
+        pstmt.setInt(20,playerStats.getMineStat());
+        pstmt.setInt(21,playerStats.getCraftStat());
+        pstmt.setInt(22,playerStats.getUseStat());
+        pstmt.setInt(23,playerStats.getKillEntity());
+        pstmt.setInt(24,playerStats.getEntityKilledBy());
+        pstmt.setInt(25,playerStats.getTotalScore());
+        pstmt.setString(26,playerStats.getDiscordID());
+        pstmt.setString(27,playerStats.getPlayerUUID().replaceAll("-",""));
         pstmt.executeUpdate();
     }
 
@@ -74,7 +109,7 @@ public class Update {
         PreparedStatement pstmt = this.conn.prepareStatement(SQL);
         pstmt.setInt(1,materialData.getCraftStat());
         pstmt.setInt(2,materialData.getUseStat());
-        pstmt.setInt(3,materialData.getMinestat());
+        pstmt.setInt(3,materialData.getMineStat());
         pstmt.setInt(4,materialData.getBrokenStat());
         pstmt.setString(5,playerStats.getDiscordID());
         pstmt.setString(6,playerStats.getPlayerUUID());
