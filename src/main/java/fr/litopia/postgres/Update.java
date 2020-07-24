@@ -78,8 +78,8 @@ public class Update {
         pstmt.setInt(7,playerStats.getTotalJump());
         pstmt.setInt(8,playerStats.getTotalMobKill());
         pstmt.setInt(9,playerStats.getTotalPlayerKill());
-        pstmt.setFloat(10,playerStats.getTotalDistanceFloat());
-        pstmt.setFloat(11,playerStats.getTotalDistanceTransportationFloat());
+        pstmt.setFloat(10,playerStats.getTotalDistance());
+        pstmt.setFloat(11,playerStats.getTotalDistanceTransportation());
         pstmt.setInt(12,playerStats.getTotalAdvancement());
         pstmt.setFloat(13,playerStats.getDamageTaken());
         pstmt.setFloat(14,playerStats.getDamageDealt());
@@ -95,7 +95,7 @@ public class Update {
         pstmt.setInt(24,playerStats.getEntityKilledBy());
         pstmt.setInt(25,playerStats.getTotalScore());
         pstmt.setString(26,playerStats.getDiscordID());
-        pstmt.setString(27,playerStats.getPlayerUUID().replaceAll("-",""));
+        pstmt.setString(27,playerStats.getPlayerUUID());
         pstmt.executeUpdate();
     }
 

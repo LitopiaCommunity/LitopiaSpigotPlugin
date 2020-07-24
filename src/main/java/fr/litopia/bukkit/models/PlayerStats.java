@@ -1,11 +1,11 @@
 package fr.litopia.bukkit.models;
 
-import com.sun.source.doctree.StartElementTree;
 import fr.litopia.bukkit.Main;
 import fr.litopia.postgres.DBConnection;
 import fr.litopia.postgres.Insert;
 import fr.litopia.postgres.Select;
 import fr.litopia.postgres.Update;
+import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 
@@ -44,21 +44,22 @@ public class PlayerStats {
     private int useStat;
     private int killEntity;
     private int entityKilledBy;
-    private long totalDistanceInCm;
-    private long totalTransportationDistanceInCm;
+    private long totalDistance;
+    private long totalTransportationDistance;
     private Main plugin;
     private String discordID = "";
 
     public PlayerStats(Player p, Main plugin) throws Exception {
         this.player = p;
         this.plugin = plugin;
-        this.ItemStats = new ArrayList<MaterialData>();
+
 
         this.minecraftUUID = this.player.getUniqueId().toString();
         //Inisialisation des variable de compte global des stats d'items
         this.mineStat = 0;
         this.craftStat = 0;
         this.useStat = 0;
+        this.ItemStats = new ArrayList<MaterialData>();
         //Ajout des stat de chaque item au joueur
         for (MaterialData md:this.plugin.getEveryMaterial()) {
             md.setPlayer(p);
@@ -84,6 +85,7 @@ public class PlayerStats {
         this.totalJump = this.player.getStatistic(Statistic.JUMP);
         this.totalDeath = this.player.getStatistic(Statistic.DEATHS);
         this.timePlayed = this.player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        this.timeSinceLastDeath = this.player.getStatistic(Statistic.TIME_SINCE_DEATH);
         this.totalAdvancement = this.player.getScoreboard().getObjective("bac_advancements").getScore(this.player).getScore();
         this.damageTaken = this.player.getStatistic(Statistic.DAMAGE_TAKEN);
         this.damageDealt = this.player.getStatistic(Statistic.DAMAGE_DEALT);
@@ -94,12 +96,29 @@ public class PlayerStats {
         this.fishCaught = this.player.getStatistic(Statistic.FISH_CAUGHT);
         this.totalScore = 0;
 
-        this.totalDistanceInCm = totalDistanceInCm();
-        this.totalTransportationDistanceInCm = totalTransportationDistanceInCm();
+        this.totalDistance = convertCentimeterToMeter(totalDistanceInCm());
+        this.totalTransportationDistance = convertCentimeterToMeter(totalTransportationDistanceInCm());
         this.Username = this.player.getDisplayName();
 
-        this.timeSinceLastDeath = player.getStatistic(Statistic.TIME_SINCE_DEATH);
+
         //Bukkit.advancementIterator().forEachRemaining(advancement -> System.out.println(advancement.getCriteria()));
+    }
+
+    public static PlayerStats playerStatsMagicBuilder(String input, Main plugin, boolean fromDisocrd) throws Exception {
+        DBConnection db = new DBConnection(plugin.config.getString("postgresConnString"));
+        Select select = new Select(db.connect());
+        Player pl = null;
+        if (fromDisocrd){
+            pl = Bukkit.getPlayer(UUID.fromString(select.getMinecraftUUID(input)));
+        }else{
+            pl = Bukkit.getPlayer(UUID.fromString(select.getMinecraftUUIDFromMinecraftNickname(input)));
+            input = select.getDiscordIDFromMCNickname(input);
+        }
+        if (pl == null){
+            return new PlayerStats(input,plugin);
+        }else{
+            return new PlayerStats(pl,plugin);
+        }
     }
 
     public PlayerStats(String discordID, Main plugin) throws Exception{
@@ -110,8 +129,9 @@ public class PlayerStats {
         DBConnection db = new DBConnection(this.plugin.config.getString("postgresConnString"));
         Select select = new Select(db.connect());
         ResultSet res = select.getMemberData(discordID);
+        this.minecraftUUID = res.getString("minecraftUUID");
 
-        this.minecraftUUID = res.getString("minecraftUUID").replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})","$1-$2-$3-$4-$5");
+        this.Username = res.getString("minecraftNickname");
 
         this.mineStat = res.getInt("totalMineStat");
         this.craftStat = res.getInt("totalCraftStat");
@@ -125,6 +145,7 @@ public class PlayerStats {
         this.totalJump =  res.getInt("numberJump");
         this.totalDeath = res.getInt("numberDeath");
         this.timePlayed = res.getInt("playTimeTick");
+        this.timeSinceLastDeath = res.getInt("timesincelastdeathtick");
         this.totalAdvancement = res.getInt("totalAdvancement");
         this.damageTaken = res.getFloat("damageTaken");
         this.damageDealt = res.getFloat("damageDealt");
@@ -134,23 +155,37 @@ public class PlayerStats {
         this.animalBred = res.getInt("animalBred");
         this.fishCaught = res.getInt("fishCaught");
         this.totalScore = res.getInt("totalScore");
+        this.totalDistance = (long)res.getFloat("totalParcourDistance");
+        this.totalTransportationDistance = (long)res.getFloat("totalparcourdistancetransportation");
 
+        intMatStat(select.getMemberItemStats(this.discordID,this.minecraftUUID));
+        intMobStat(select.getMemberMobStats(this.discordID,this.minecraftUUID));
+    }
 
-        res = select.getMemberItemStats(this.discordID,this.minecraftUUID);
-        while (res.next()){
-            MaterialData materialData = new MaterialData(res.getString("item"));
-            materialData.setStat(res.getInt("numberBroken"),res.getInt("numberCraft"),res.getInt("numberUsed"),res.getInt("numberMine"));
+    private void intMatStat(ResultSet allMatStats) throws SQLException {
+        this.ItemStats = new ArrayList<MaterialData>();
+        while (allMatStats.next()){
+            MaterialData materialData = new MaterialData(allMatStats.getString("item"));
+            materialData.setStat(
+                    allMatStats.getInt("numberBroken"),
+                    allMatStats.getInt("numberCraft"),
+                    allMatStats.getInt("numberUsed"),
+                    allMatStats.getInt("numberMine")
+            );
             this.ItemStats.add(materialData);
         }
+    }
 
-
-        res = select.getMemberItemStats(this.discordID,this.minecraftUUID);
-        while (res.next()){
-            EntityData entityData = new EntityData(res.getString("mob"));
-            entityData.setStat(res.getInt("killed"),res.getInt("murder"));
+    private void intMobStat(ResultSet allEntityStats) throws SQLException {
+        this.EntityStats = new ArrayList<EntityData>();
+        while (allEntityStats.next()){
+            EntityData entityData = new EntityData(allEntityStats.getString("mob"));
+            entityData.setStat(
+                    allEntityStats.getInt("killed"),
+                    allEntityStats.getInt("murder")
+            );
             this.EntityStats.add(entityData);
         }
-
     }
 
     public ArrayList<MaterialData> getItemStats() {
@@ -255,7 +290,7 @@ public class PlayerStats {
     }
 
     public String getPlayerUUID(){
-        return this.minecraftUUID;
+        return this.minecraftUUID.replaceAll("-","");
     }
 
     public String getTimeSinceLastDeathInString(){
@@ -267,23 +302,19 @@ public class PlayerStats {
     }
 
     public String getTotalDistanceTransportationString(){
-        long totalDistance = totalTransportationDistanceInCm();
-        return convertCentimeterToString(totalDistance);
-    }
-
-    public float getTotalDistanceTransportationFloat(){
-        long totalDistance = totalTransportationDistanceInCm();
-        return convertCentimeterToFloat(totalDistance);
+        return convertMeterToString(this.totalTransportationDistance);
     }
 
     public String getTotalDistanceString(){
-        long totalDistance = totalDistanceInCm();
-        return convertCentimeterToString(totalDistance);
+        return convertMeterToString(this.totalDistance);
     }
 
-    public float getTotalDistanceFloat(){
-        long totalDistance = totalDistanceInCm();
-        return convertCentimeterToFloat(totalDistance);
+    public long getTotalDistance(){
+        return totalDistance;
+    }
+
+    public long getTotalDistanceTransportation(){
+        return totalTransportationDistance;
     }
 
     private long totalDistanceInCm() {
@@ -311,8 +342,7 @@ public class PlayerStats {
         return totalDistance;
     }
 
-    private String convertCentimeterToString(long distance){
-        distance = distance/100;
+    private String convertMeterToString(long distance){
         if (distance<1000){
             return String.valueOf(distance)+" m";
         }else {
@@ -320,9 +350,8 @@ public class PlayerStats {
         }
     }
 
-    private float convertCentimeterToFloat(long distance){
-        distance = distance/100;
-        return (float)distance/1000;
+    private long convertCentimeterToMeter(long distance){
+        return distance/100;
     }
 
     private String getConvertTick(int tick) {

@@ -117,7 +117,7 @@ public class GlobalPlayerData {
         this.TotalDeath = PS.getTotalDeath();
         this.TimePlayed = PS.getTimePlayedInString();
         this.TimeSinceLastDeath = PS.getTimeSinceLastDeathInString();
-        this.TotalParcourDistance = PS.getTotalDistanceFloat();
+        this.TotalParcourDistance = PS.getTotalDistance();
         generateMobStats(PS);
         generateItemStats(PS);
     }

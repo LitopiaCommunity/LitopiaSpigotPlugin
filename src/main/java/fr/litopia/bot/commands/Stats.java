@@ -4,6 +4,7 @@ import fr.litopia.bot.models.GlobalPlayerData;
 import fr.litopia.bot.models.SimplePlayerData;
 import fr.litopia.bot.models.SimplePlayersCollection;
 import fr.litopia.bukkit.Main;
+import fr.litopia.bukkit.models.PlayerStats;
 import fr.litopia.postgres.DBConnection;
 import fr.litopia.postgres.Select;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -38,8 +39,8 @@ public class Stats extends ListenerAdapter {
             if (args.length == 1){
                 //on récupére les donnée de l'autheur
                 try {
-                    GlobalPlayerData StatPlayer = new GlobalPlayerData(event.getAuthor().getId(), plugin);
-                    sendBaseStatMessage(event,StatPlayer);
+                    PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getAuthor().getId(), plugin,true);
+                    sendBaseStatMessage(event,playerStats);
                     return;
                 } catch (Exception e) {
                     event.getChannel().sendMessage("**:warning: Vous n'êtes pas enregistrer dans la BDD** \n`"+e.getMessage()+"`").queue();
@@ -52,7 +53,7 @@ public class Stats extends ListenerAdapter {
                         if (args.length == 2) {
                             //on récupére les donnée de l'autheur
                             try {
-                                GlobalPlayerData StatPlayer = new GlobalPlayerData(event.getAuthor().getId(), plugin);
+                                PlayerStats StatPlayer = PlayerStats.playerStatsMagicBuilder(event.getAuthor().getId(), plugin,true);
                                 sendMobMessage(event, StatPlayer);
                                 return;
                             } catch (Exception e) {
@@ -66,7 +67,7 @@ public class Stats extends ListenerAdapter {
                                 //on récupérer les donnée de l'utilisateur mentioner
                                 try {
                                     //on affiche le message des mobs
-                                    GlobalPlayerData StatPlayer = new GlobalPlayerData(event.getMessage().getMentionedUsers().get(0).getId(), plugin);
+                                    PlayerStats StatPlayer = PlayerStats.playerStatsMagicBuilder(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
                                     sendMobMessage(event, StatPlayer);
                                     return;
                                 } catch (Exception e) {
@@ -77,7 +78,7 @@ public class Stats extends ListenerAdapter {
                             }
                             //Sinon on récupére le deuxieme argument en tant que pseudo minecraft.
                             try {
-                                GlobalPlayerData StatPlayer = new GlobalPlayerData(plugin, args[2]);
+                                PlayerStats StatPlayer = PlayerStats.playerStatsMagicBuilder(args[2],plugin,false);
                                 sendMobMessage(event, StatPlayer);
                             } catch (Exception e) {
                                 event.getChannel().sendMessage("**:warning: " + args[2] + " n'a pas était trouver dans la BDD** \n`" + e.getMessage() + "`").queue();
@@ -89,8 +90,8 @@ public class Stats extends ListenerAdapter {
                         if (args.length == 2) {
                             //on récupére les donnée de l'autheur
                             try {
-                                GlobalPlayerData StatPlayer = new GlobalPlayerData(event.getAuthor().getId(), plugin);
-                                sendItemMessage(event, StatPlayer);
+                                PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getAuthor().getId(), plugin,true);
+                                sendItemMessage(event, playerStats);
                                 return;
                             } catch (Exception e) {
                                 event.getChannel().sendMessage("**:warning: Vous n'êtes pas enregistrer dans la BDD** \n`" + e.getMessage() + "`").queue();
@@ -103,8 +104,8 @@ public class Stats extends ListenerAdapter {
                                 //on récupérer les donnée de l'utilisateur mentioner
                                 try {
                                     //on affiche le message des mobs
-                                    GlobalPlayerData StatPlayer = new GlobalPlayerData(event.getMessage().getMentionedUsers().get(0).getId(), plugin);
-                                    sendItemMessage(event, StatPlayer);
+                                    PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
+                                    sendItemMessage(event, playerStats);
                                     return;
                                 } catch (Exception e) {
                                     event.getChannel().sendMessage("**:warning: <@" + event.getMessage().getMentionedUsers().get(0).getId() + "> n'est pas enregistrer dans la BDD** \n`" + e.getMessage() + "`").queue();
@@ -114,8 +115,8 @@ public class Stats extends ListenerAdapter {
                             }
                             //Sinon on récupére le deuxieme argument en tant que pseudo minecraft.
                             try {
-                                GlobalPlayerData StatPlayer = new GlobalPlayerData(plugin, args[2]);
-                                sendItemMessage(event, StatPlayer);
+                                PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(args[2],plugin,false);
+                                sendItemMessage(event, playerStats);
                             } catch (Exception e) {
                                 event.getChannel().sendMessage("**:warning: " + args[2] + " n'a pas était trouver dans la BDD** \n`" + e.getMessage() + "`").queue();
 
@@ -130,8 +131,8 @@ public class Stats extends ListenerAdapter {
                         if (event.getMessage().getMentionedUsers().size() >= 1) {
                             //on récupérer les donnée de l'utilisateur mentioner
                             try {
-                                GlobalPlayerData StatPlayer = new GlobalPlayerData(event.getMessage().getMentionedUsers().get(0).getId(), plugin);
-                                sendBaseStatMessage(event, StatPlayer);
+                                PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
+                                sendBaseStatMessage(event, playerStats);
                                 return;
                             } catch (Exception e) {
                                 event.getChannel().sendMessage("**:warning: <@" + event.getMessage().getMentionedUsers().get(0).getId() + "> n'est pas enregistrer dans la BDD** \n`" + e.getMessage() + "`").queue();
@@ -141,8 +142,8 @@ public class Stats extends ListenerAdapter {
 
                         //Sinon on récupére le premier argument en tant que pseudo minecraft.
                         try {
-                            GlobalPlayerData StatPlayer = new GlobalPlayerData(plugin, args[1]);
-                            sendBaseStatMessage(event, StatPlayer);
+                            PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(args[1],plugin,false);
+                            sendBaseStatMessage(event, playerStats);
                         } catch (Exception e) {
                             event.getChannel().sendMessage("**:warning: " + args[1] + " n'a pas était trouver dans la BDD** \n`" + e.getMessage() + "`").queue();
                         }
@@ -164,11 +165,11 @@ public class Stats extends ListenerAdapter {
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendItemMessage(GuildMessageReceivedEvent event, GlobalPlayerData player) {
+    private void sendItemMessage(GuildMessageReceivedEvent event, PlayerStats player) {
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Statistique de "+player.getMinecraftUsername());
+        eb.setTitle("Statistique de "+player.getUsername());
 
-        eb.appendDescription("Voici les item que "+player.getMinecraftUsername()+" connais bien");
+        eb.appendDescription("Voici les item que "+player.getUsername()+" connais bien");
 
         if (!player.getMinedItems().equals("")) {
             eb.addField("Nombre d'items minée", player.getMinedItems(), true);
@@ -198,38 +199,43 @@ public class Stats extends ListenerAdapter {
             eb.addField("Nombre d'items crafter",player.getCraftedItems(),true);
         }
 
-        eb.setThumbnail("https://crafatar.com/avatars/"+player.getMinecraftUUID().toString());
+        eb.setThumbnail("https://crafatar.com/avatars/"+player.getPlayerUUID());
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendMobMessage(GuildMessageReceivedEvent event, GlobalPlayerData player) {
+    private void sendMobMessage(GuildMessageReceivedEvent event, PlayerStats player) {
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Statistique de "+player.getMinecraftUsername());
-        eb.appendDescription("Voici le tableau de chasse ou de chassez de "+player.getMinecraftUsername());
+        eb.setTitle("Statistique de "+player.getUsername());
+        eb.appendDescription("Voici le tableau de chasse ou de chassez de "+player.getUsername());
         eb.addField("Nombre de mob tuer",String.valueOf(player.getTotalMobKill()),true);
         eb.addBlankField(true);
         eb.addField("Nombre de mort",String.valueOf(player.getTotalDeath()),true);
         eb.addField("Mob tuer",player.getMobsKilledMessage(),true);
         eb.addBlankField(true);
         eb.addField("Tuer par",player.getMurderMobsMessage(),true);
-        eb.setThumbnail("https://crafatar.com/avatars/"+player.getMinecraftUUID().toString());
+        eb.setThumbnail("https://crafatar.com/avatars/"+player.getPlayerUUID());
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
 
 
 
-    private void sendBaseStatMessage(GuildMessageReceivedEvent event,GlobalPlayerData player){
+    private void sendBaseStatMessage(GuildMessageReceivedEvent event, PlayerStats player){
+        System.out.println(player.getUsername());
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Statistique de "+player.getMinecraftUsername());
-        eb.addField("Temps de jeux",player.getTimePlayed(),true);
-        eb.addField("Dernière mort",player.getTimeSinceLastDeath(),true);
+        eb.setTitle("Statistique de "+player.getUsername());
+        eb.addField("Score",String.valueOf(player.getTotalScore()),true);
+        eb.addField("Temps de jeux",player.getTimePlayedInString(),true);
+        eb.addField("Dernière mort",player.getTimeSinceLastDeathInString(),true);
         eb.addField("Nombre de mort",String.valueOf(player.getTotalDeath()),true);
         eb.addField("Nombre de mob tuer",String.valueOf(player.getTotalMobKill()),true);
         eb.addField("Nombres de joueur tuer",String.valueOf(player.getTotalPlayerKill()),true);
-        eb.addField("Distance Parcourue",String.valueOf(player.getTotalParcourDistance()),true);
+        //System.out.println(player.getTotalDistanceTransportation());
+        //System.out.println(player.getTotalDistanceTransportationString());
+        eb.addField("Distance Parcourue à Pied",player.getTotalDistanceString(),true);
+        eb.addField("Distance Parcourue en Transport",player.getTotalDistanceTransportationString(),true);
         eb.addField("Nombre total de saut",String.valueOf(player.getTotalJump()),true);
-        eb.setThumbnail("https://crafatar.com/avatars/"+player.getMinecraftUUID().toString());
+        eb.setThumbnail("https://crafatar.com/avatars/"+player.getPlayerUUID());
         event.getChannel().sendMessage(eb.build()).queue();
     }
 }
