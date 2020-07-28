@@ -1,8 +1,5 @@
 package fr.litopia.bot.commands;
 
-import fr.litopia.bot.models.GlobalPlayerData;
-import fr.litopia.bot.models.SimplePlayerData;
-import fr.litopia.bot.models.SimplePlayersCollection;
 import fr.litopia.bukkit.Main;
 import fr.litopia.bukkit.models.PlayerStats;
 import fr.litopia.postgres.DBConnection;
@@ -39,7 +36,7 @@ public class Stats extends ListenerAdapter {
             if (args.length == 1){
                 //on récupére les donnée de l'autheur
                 try {
-                    PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getAuthor().getId(), plugin,true);
+                    PlayerStats playerStats = PlayerStats.playerStatsFactory(event.getAuthor().getId(), plugin,true);
                     sendBaseStatMessage(event,playerStats);
                     return;
                 } catch (Exception e) {
@@ -53,7 +50,7 @@ public class Stats extends ListenerAdapter {
                         if (args.length == 2) {
                             //on récupére les donnée de l'autheur
                             try {
-                                PlayerStats StatPlayer = PlayerStats.playerStatsMagicBuilder(event.getAuthor().getId(), plugin,true);
+                                PlayerStats StatPlayer = PlayerStats.playerStatsFactory(event.getAuthor().getId(), plugin,true);
                                 sendMobMessage(event, StatPlayer);
                                 return;
                             } catch (Exception e) {
@@ -67,7 +64,7 @@ public class Stats extends ListenerAdapter {
                                 //on récupérer les donnée de l'utilisateur mentioner
                                 try {
                                     //on affiche le message des mobs
-                                    PlayerStats StatPlayer = PlayerStats.playerStatsMagicBuilder(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
+                                    PlayerStats StatPlayer = PlayerStats.playerStatsFactory(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
                                     sendMobMessage(event, StatPlayer);
                                     return;
                                 } catch (Exception e) {
@@ -78,7 +75,7 @@ public class Stats extends ListenerAdapter {
                             }
                             //Sinon on récupére le deuxieme argument en tant que pseudo minecraft.
                             try {
-                                PlayerStats StatPlayer = PlayerStats.playerStatsMagicBuilder(args[2],plugin,false);
+                                PlayerStats StatPlayer = PlayerStats.playerStatsFactory(args[2],plugin,false);
                                 sendMobMessage(event, StatPlayer);
                             } catch (Exception e) {
                                 event.getChannel().sendMessage("**:warning: " + args[2] + " n'a pas était trouver dans la BDD** \n`" + e.getMessage() + "`").queue();
@@ -90,7 +87,7 @@ public class Stats extends ListenerAdapter {
                         if (args.length == 2) {
                             //on récupére les donnée de l'autheur
                             try {
-                                PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getAuthor().getId(), plugin,true);
+                                PlayerStats playerStats = PlayerStats.playerStatsFactory(event.getAuthor().getId(), plugin,true);
                                 sendItemMessage(event, playerStats);
                                 return;
                             } catch (Exception e) {
@@ -104,7 +101,7 @@ public class Stats extends ListenerAdapter {
                                 //on récupérer les donnée de l'utilisateur mentioner
                                 try {
                                     //on affiche le message des mobs
-                                    PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
+                                    PlayerStats playerStats = PlayerStats.playerStatsFactory(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
                                     sendItemMessage(event, playerStats);
                                     return;
                                 } catch (Exception e) {
@@ -115,7 +112,7 @@ public class Stats extends ListenerAdapter {
                             }
                             //Sinon on récupére le deuxieme argument en tant que pseudo minecraft.
                             try {
-                                PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(args[2],plugin,false);
+                                PlayerStats playerStats = PlayerStats.playerStatsFactory(args[2],plugin,false);
                                 sendItemMessage(event, playerStats);
                             } catch (Exception e) {
                                 event.getChannel().sendMessage("**:warning: " + args[2] + " n'a pas était trouver dans la BDD** \n`" + e.getMessage() + "`").queue();
@@ -131,7 +128,7 @@ public class Stats extends ListenerAdapter {
                         if (event.getMessage().getMentionedUsers().size() >= 1) {
                             //on récupérer les donnée de l'utilisateur mentioner
                             try {
-                                PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
+                                PlayerStats playerStats = PlayerStats.playerStatsFactory(event.getMessage().getMentionedUsers().get(0).getId(), plugin,true);
                                 sendBaseStatMessage(event, playerStats);
                                 return;
                             } catch (Exception e) {
@@ -142,7 +139,7 @@ public class Stats extends ListenerAdapter {
 
                         //Sinon on récupére le premier argument en tant que pseudo minecraft.
                         try {
-                            PlayerStats playerStats = PlayerStats.playerStatsMagicBuilder(args[1],plugin,false);
+                            PlayerStats playerStats = PlayerStats.playerStatsFactory(args[1],plugin,false);
                             sendBaseStatMessage(event, playerStats);
                         } catch (Exception e) {
                             event.getChannel().sendMessage("**:warning: " + args[1] + " n'a pas était trouver dans la BDD** \n`" + e.getMessage() + "`").queue();
@@ -210,9 +207,9 @@ public class Stats extends ListenerAdapter {
         eb.addField("Nombre de mob tuer",String.valueOf(player.getTotalMobKill()),true);
         eb.addBlankField(true);
         eb.addField("Nombre de mort",String.valueOf(player.getTotalDeath()),true);
-        eb.addField("Mob tuer",player.getMobsKilledMessage(),true);
+        eb.addField("Mob tuer",player.getMurderMobsMessage(),true);
         eb.addBlankField(true);
-        eb.addField("Tuer par",player.getMurderMobsMessage(),true);
+        eb.addField("Tuer par",player.getMobsKilledMessage(),true);
         eb.setThumbnail("https://crafatar.com/avatars/"+player.getPlayerUUID());
         event.getChannel().sendMessage(eb.build()).queue();
     }

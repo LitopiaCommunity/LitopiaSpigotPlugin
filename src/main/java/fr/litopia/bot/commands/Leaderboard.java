@@ -1,10 +1,7 @@
 package fr.litopia.bot.commands;
 
-import fr.litopia.bot.models.SimplePlayerData;
-import fr.litopia.bot.models.SimplePlayersCollection;
+import fr.litopia.bot.models.LeaderboardData;
 import fr.litopia.bukkit.Main;
-import fr.litopia.postgres.DBConnection;
-import fr.litopia.postgres.Select;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -29,8 +26,7 @@ public class Leaderboard extends ListenerAdapter {
             //Si il n'y a pas d'argument
             if (args.length == 1) {
                 try {
-                    SimplePlayersCollection globalPlayersCollection = new SimplePlayersCollection(plugin);
-                    sendRankGlobalPointMessage(event, globalPlayersCollection,"Leaderbord global des meilleurs","Point");
+                    sendRankGlobalPointMessage(event, "Leaderbord global des meilleurs");
                 } catch (Exception e) {
                     event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
                     e.printStackTrace();
@@ -39,26 +35,33 @@ public class Leaderboard extends ListenerAdapter {
                 switch (args[1]) {
                     case "jumps":
                         try {
-                            SimplePlayersCollection globalPlayersCollection = new SimplePlayersCollection(plugin);
-                            sendRankJumpMessage(event, globalPlayersCollection,"Leaderbord des lapins ou des chat","saut");
+                            sendRankJumpMessage(event, "Leaderbord des lapins ou des chat");
                         } catch (Exception e) {
                             event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
                             e.printStackTrace();
                         }
                         break;
                     case "death":
-                        try {
-                            SimplePlayersCollection globalPlayersCollection = new SimplePlayersCollection(plugin);
-                            sendRankDeathMessage(event, globalPlayersCollection,"Leaderbord des joueur les moin mort","mort");
-                        } catch (Exception e) {
-                            event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
-                            e.printStackTrace();
+                        if (args.length == 2) {
+                            try {
+                                sendRankDeathMessage(event, "Leaderbord des joueur les moin mort");
+                            } catch (Exception e) {
+                                event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
+                                e.printStackTrace();
+                            }
+                        }
+                        else if (args[2].equals("reverse")) {
+                            try {
+                                sendRankDeathReverseMessage(event, "Leaderbord des joueur les plus mort");
+                            } catch (Exception e) {
+                                event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
+                                e.printStackTrace();
+                            }
                         }
                         break;
                     case "mobs":
                         try {
-                            SimplePlayersCollection globalPlayersCollection = new SimplePlayersCollection(plugin);
-                            sendRankMobsKillMessage(event, globalPlayersCollection,"Leaderbord des joueur les plus sanginaire","mob tuer");
+                            sendRankMobsKillMessage(event,"Leaderbord des joueur les plus sanginaire");
                         } catch (Exception e) {
                             event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
                             e.printStackTrace();
@@ -66,17 +69,39 @@ public class Leaderboard extends ListenerAdapter {
                         break;
                     case "players":
                         try {
-                            SimplePlayersCollection globalPlayersCollection = new SimplePlayersCollection(plugin);
-                            sendRankPlayerKillMessage(event, globalPlayersCollection,"Leaderbord des killer en séris","joueur tuer");
+                            sendRankPlayerKillMessage(event,"Leaderbord des killer en séris");
                         } catch (Exception e) {
                             event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
                             e.printStackTrace();
                         }
                         break;
-                    case "distance":
+                    case "walk":
                         try {
-                            SimplePlayersCollection globalPlayersCollection = new SimplePlayersCollection(plugin);
-                            sendRankDistanceMessage(event, globalPlayersCollection,"Leaderbord des voyageurs","km");
+                            sendRankWalkMessage(event,"Leaderbord des voyageurs");
+                        } catch (Exception e) {
+                            event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "vehicle":
+                        try {
+                            sendRankTransportation(event,"Leaderbord des conducteur");
+                        } catch (Exception e) {
+                            event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "playtime":
+                        try {
+                            sendRankGlobalPlayTimeMessage(event,"Leaderbord du temps de jeux");
+                        } catch (Exception e) {
+                            event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "advancement":
+                        try {
+                            sendRankGlobalAdvancement(event,"Leaderbord des advencement");
                         } catch (Exception e) {
                             event.getChannel().sendMessage("**:warning: Une erreur inconue et survenue** \n`" + e.getMessage() + "`").queue();
                             e.printStackTrace();
@@ -100,101 +125,87 @@ public class Leaderboard extends ListenerAdapter {
         eb.setTitle("Help !");
         eb.appendDescription("Cette commande vous permet de conaitre les statistique des joueurs de litopia");
         eb.addField("**"+prefix+"leaderboard**","Affiche le leaderboard global",true);
+        eb.addField("**"+prefix+"leaderboard playtime**","Affiche le leaderboard du temps de jeu",true);
+        eb.addField("**"+prefix+"leaderboard advancement**","Affiche le leaderboard des advancement",true);
         eb.addField("**"+prefix+"leaderboard jumps**","Affiche le leaderboard du nombres de jump",true);
         eb.addField("**"+prefix+"leaderboard death**","Affiche le leaderboard du nombres de mort",true);
         eb.addField("**"+prefix+"leaderboard mobs**","Affiche le leaderboard du nombres de mobs tuer",true);
         eb.addField("**"+prefix+"leaderboard players**","Affiche le leaderboard du nombres de joueur tuer",true);
-        eb.addField("**"+prefix+"leaderboard distance**","Affiche le leaderboard des nomade",true);
+        eb.addField("**"+prefix+"leaderboard walk**","Affiche le leaderboard des nomade",true);
+        eb.addField("**"+prefix+"leaderboard vehicle**","Affiche le leaderboard des conduteur",true);
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendRankJumpMessage(GuildMessageReceivedEvent event, SimplePlayersCollection globalPlayersCollection,String Title, String keyname) {
-        globalPlayersCollection.sortByJump();
+    private void sendRankGlobalAdvancement(GuildMessageReceivedEvent event, String Title) throws Exception {
         EmbedBuilder eb = new EmbedBuilder();
-        StringBuilder s = new StringBuilder("```\n");
-        int i = 0;
-        for (SimplePlayerData playerdata : globalPlayersCollection.getGlobalPlayersData()) {
-            i = i + 1;
-            s.append(i).append(" - ").append(playerdata.getTotalJump()).append(" ").append(keyname).append(" ").append(playerdata.getMinecraftUsername()).append("\n");
-            if (i == 30) break;
-        }
-        s.append("```");
-        eb.addField(Title, s.toString(), false);
+        eb.addField(Title, LeaderboardData.getlbAdvancement(plugin), false);
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendRankPlayerKillMessage(GuildMessageReceivedEvent event, SimplePlayersCollection globalPlayersCollection,String Title, String keyname) {
-        globalPlayersCollection.sortByPlayerKill();
+    private void sendRankTransportation(GuildMessageReceivedEvent event, String Title) throws Exception {
         EmbedBuilder eb = new EmbedBuilder();
-        StringBuilder s = new StringBuilder("```\n");
-        int i = 0;
-        for (SimplePlayerData playerdata : globalPlayersCollection.getGlobalPlayersData()) {
-            i = i + 1;
-            s.append(i).append(" - ").append(playerdata.getTotalPlayerKill()).append(" ").append(keyname).append(" ").append(playerdata.getMinecraftUsername()).append("\n");
-            if (i == 30) break;
-        }
-        s.append("```");
-        eb.addField(Title, s.toString(), false);
+        eb.addField(Title, LeaderboardData.getlbTransportation(plugin), false);
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendRankDeathMessage(GuildMessageReceivedEvent event, SimplePlayersCollection globalPlayersCollection,String Title, String keyname) {
-        globalPlayersCollection.sortByNumberDeath();
+    private void sendRankJumpMessage(GuildMessageReceivedEvent event,String Title) throws Exception {
         EmbedBuilder eb = new EmbedBuilder();
-        StringBuilder s = new StringBuilder("```\n");
-        int i = 0;
-        for (SimplePlayerData playerdata : globalPlayersCollection.getGlobalPlayersData()) {
-            i = i + 1;
-            s.append(i).append(" - ").append(playerdata.getTotalDeath()).append(" ").append(keyname).append(" ").append(playerdata.getMinecraftUsername()).append("\n");
-            if (i == 30) break;
-        }
-        s.append("```");
-        eb.addField(Title, s.toString(), false);
+        eb.addField(Title, LeaderboardData.getlbJump(plugin), false);
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendRankMobsKillMessage(GuildMessageReceivedEvent event, SimplePlayersCollection globalPlayersCollection,String Title, String keyname) {
-        globalPlayersCollection.sortByMobkill();
+    private void sendRankPlayerKillMessage(GuildMessageReceivedEvent event,String Title) throws Exception {
         EmbedBuilder eb = new EmbedBuilder();
-        StringBuilder s = new StringBuilder("```\n");
-        int i = 0;
-        for (SimplePlayerData playerdata : globalPlayersCollection.getGlobalPlayersData()) {
-            i = i + 1;
-            s.append(i).append(" - ").append(playerdata.getTotalMobKill()).append(" ").append(keyname).append(" ").append(playerdata.getMinecraftUsername()).append("\n");
-            if (i == 30) break;
-        }
-        s.append("```");
-        eb.addField(Title, s.toString(), false);
+        eb.addField(Title, LeaderboardData.getlbPlayerKills(plugin), false);
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendRankDistanceMessage(GuildMessageReceivedEvent event, SimplePlayersCollection globalPlayersCollection,String Title, String keyname) {
-        globalPlayersCollection.sortByParcourDistance();
+    private void sendRankDeathMessage(GuildMessageReceivedEvent event,String Title) throws Exception {
         EmbedBuilder eb = new EmbedBuilder();
-        StringBuilder s = new StringBuilder("```\n");
-        int i = 0;
-        for (SimplePlayerData playerdata : globalPlayersCollection.getGlobalPlayersData()) {
-            i = i + 1;
-            s.append(i).append(" - ").append(playerdata.getTotalParcourDistance()).append(" ").append(keyname).append(" ").append(playerdata.getMinecraftUsername()).append("\n");
-            if (i == 30) break;
-        }
-        s.append("```");
-        eb.addField(Title, s.toString(), false);
+        eb.addField(Title, LeaderboardData.getlbDeath(plugin), false);
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void sendRankGlobalPointMessage(GuildMessageReceivedEvent event, SimplePlayersCollection globalPlayersCollection,String Title, String keyname) {
-        globalPlayersCollection.sortByGlobalRankingScore();
+    private void sendRankDeathReverseMessage(GuildMessageReceivedEvent event,String Title) throws Exception {
         EmbedBuilder eb = new EmbedBuilder();
-        StringBuilder s = new StringBuilder("```\n");
-        int i = 0;
-        for (SimplePlayerData playerdata : globalPlayersCollection.getGlobalPlayersData()) {
-            i = i + 1;
-            s.append(i).append(" - ").append(playerdata.getRankingScore()).append(" ").append(keyname).append(" ").append(playerdata.getMinecraftUsername()).append("\n");
-            if (i == 30) break;
-        }
-        s.append("```");
-        eb.addField(Title, s.toString(), false);
+        eb.addField(Title, LeaderboardData.getlbDeathReverse(plugin), false);
+        event.getChannel().sendMessage(eb.build()).queue();
+    }
+
+    private void sendRankMobsKillMessage(GuildMessageReceivedEvent event,String Title) throws Exception {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.addField(Title, LeaderboardData.getlbMobsKill(plugin), false);
+        event.getChannel().sendMessage(eb.build()).queue();
+    }
+
+    private void sendRankWalkMessage(GuildMessageReceivedEvent event, String Title) throws Exception{
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.addField(Title, LeaderboardData.getlbWalk(plugin), false);
+        event.getChannel().sendMessage(eb.build()).queue();
+
+    }
+
+    private void sendRankGlobalPointMessage(GuildMessageReceivedEvent event,String Title) throws Exception {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.addField(Title, LeaderboardData.getlbScore(plugin), false);
+        event.getChannel().sendMessage(eb.build()).queue();
+    }
+
+    private void sendRankGlobalPlayTimeMessage(GuildMessageReceivedEvent event,String Title)throws Exception{
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.addField(Title, LeaderboardData.getlbTime(plugin), false);
+        event.getChannel().sendMessage(eb.build()).queue();
+    }
+
+    private void sendlbTransportation(GuildMessageReceivedEvent event,String Title) throws Exception {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.addField(Title, LeaderboardData.getlbTransportation(plugin), false);
+        event.getChannel().sendMessage(eb.build()).queue();
+    }
+
+    private void sendlbAdvancement(GuildMessageReceivedEvent event,String Title) throws Exception {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.addField(Title, LeaderboardData.getlbAdvancement(plugin), false);
         event.getChannel().sendMessage(eb.build()).queue();
     }
 }

@@ -2,16 +2,10 @@ package fr.litopia.bot.models;
 
 import fr.litopia.bukkit.Main;
 import fr.litopia.bukkit.models.PlayerStats;
-import fr.litopia.postgres.DBConnection;
-import fr.litopia.postgres.Select;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class SimplePlayerData {
@@ -70,7 +64,7 @@ public class SimplePlayerData {
         this.TotalDeath = PS.getTotalDeath();
         this.TimePlayed = PS.getTimePlayedInString();
         this.TimeSinceLastDeath = PS.getTimeSinceLastDeathInString();
-        this.TotalParcourDistance = PS.getTotalDistanceFloat();
+        this.TotalParcourDistance = PS.getTotalDistance();
     }
 
     public String getMinecraftUsername() {

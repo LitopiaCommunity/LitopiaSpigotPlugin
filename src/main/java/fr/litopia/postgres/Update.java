@@ -113,7 +113,7 @@ public class Update {
         pstmt.setInt(4,materialData.getBrokenStat());
         pstmt.setString(5,playerStats.getDiscordID());
         pstmt.setString(6,playerStats.getPlayerUUID());
-        pstmt.setString(7,materialData.getName());
+        pstmt.setString(7,materialData.getId());
         pstmt.executeUpdate();
     }
     public void updateMobStats(EntityData entityData, PlayerStats playerStats) throws SQLException {
@@ -126,7 +126,7 @@ public class Update {
         pstmt.setInt(2,entityData.getEntityKilledBy());
         pstmt.setString(3,playerStats.getDiscordID());
         pstmt.setString(4,playerStats.getPlayerUUID());
-        pstmt.setString(5,entityData.getName());
+        pstmt.setString(5,entityData.getId());
         pstmt.executeUpdate();
     }
 }

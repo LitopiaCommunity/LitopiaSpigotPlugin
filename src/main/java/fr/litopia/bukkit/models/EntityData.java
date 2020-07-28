@@ -1,5 +1,6 @@
 package fr.litopia.bukkit.models;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Statistic;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -7,18 +8,21 @@ import org.bukkit.entity.Player;
 public class EntityData {
     private EntityType entityType;
     private String name;
+    private String id;
     private Player player;
     private int killEntity;
     private int entityKilledBy;
 
     public EntityData(EntityType ett, String name){
         this.entityType=ett;
-        this.name=name;
+        this.name= WordUtils.capitalize(name.toLowerCase()).replace("_"," ");
+        this.id=name;
     }
 
     public EntityData(String ettName){
         this.entityType = EntityType.fromName(ettName);
-        this.name = ettName;
+        this.name = WordUtils.capitalize(ettName.toLowerCase()).replace("_"," ");
+        this.id=name;
     }
 
     public void setPlayer(Player player) throws Exception {
@@ -39,6 +43,10 @@ public class EntityData {
 
     public String getName() {
         return name;
+    }
+
+    public String getId(){
+        return id;
     }
 
     public Player getPlayer() {

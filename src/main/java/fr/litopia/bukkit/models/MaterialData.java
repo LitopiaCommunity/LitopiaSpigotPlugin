@@ -1,5 +1,6 @@
 package fr.litopia.bukkit.models;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import javax.naming.Name;
 public class MaterialData {
     private Material mat;
     private String name;
+    private String id;
     private Player player;
     private int mineStat;
     private int brokenStat;
@@ -17,12 +19,14 @@ public class MaterialData {
 
     public MaterialData(Material material, String name){
         this.mat = material;
-        this.name = name;
+        this.name = WordUtils.capitalize(name.toLowerCase()).replace("_"," ");
+        this.id = name;
     }
 
     public MaterialData(String name){
         this.mat = Material.matchMaterial(name);
-        this.name = name;
+        this.name = WordUtils.capitalize(name.toLowerCase()).replace("_"," ");
+        this.id = name;
     }
 
     public Material getMat() {
@@ -31,6 +35,10 @@ public class MaterialData {
 
     public String getName() {
         return name;
+    }
+
+    public String getId(){
+        return id;
     }
 
     public void setPlayer(Player p){

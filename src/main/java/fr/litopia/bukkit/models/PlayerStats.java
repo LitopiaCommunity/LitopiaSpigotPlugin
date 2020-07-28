@@ -94,17 +94,15 @@ public class PlayerStats {
         this.tradedWithVillager = this.player.getStatistic(Statistic.TRADED_WITH_VILLAGER);
         this.animalBred = this.player.getStatistic(Statistic.ANIMALS_BRED);
         this.fishCaught = this.player.getStatistic(Statistic.FISH_CAUGHT);
-        this.totalScore = 0;
 
         this.totalDistance = convertCentimeterToMeter(totalDistanceInCm());
         this.totalTransportationDistance = convertCentimeterToMeter(totalTransportationDistanceInCm());
         this.Username = this.player.getDisplayName();
 
-
-        //Bukkit.advancementIterator().forEachRemaining(advancement -> System.out.println(advancement.getCriteria()));
+        this.totalScore = setTotalScore();
     }
 
-    public static PlayerStats playerStatsMagicBuilder(String input, Main plugin, boolean fromDisocrd) throws Exception {
+    public static PlayerStats playerStatsFactory(String input, Main plugin, boolean fromDisocrd) throws Exception {
         DBConnection db = new DBConnection(plugin.config.getString("postgresConnString"));
         Select select = new Select(db.connect());
         Player pl = null;
@@ -260,6 +258,97 @@ public class PlayerStats {
         return this.totalScore;
     }
 
+    private int setTotalScore() {
+        double
+                mobKillScore,
+                jumpScore,
+                playerKilledScore,
+                timePlayedScore,
+                distanceScore,
+                distanceTransortationScore,
+                minedScore,
+                craftScore,
+                useScore,
+                damageTakenScore,
+                damageDealtScore,
+                damageBlockedByShieldScore,
+                killEntityScore,
+                raidWonScore,
+                tradedWithVillagersScore,
+                animalBredScore,
+                fishCaughtScore,
+                sumScore;
+        int deathScore,advancementScore;
+
+        mobKillScore = Math.sqrt(35000)/(175*Math.sqrt(this.totalMobKill));
+        jumpScore = Math.sqrt(this.totalJump)*(Math.sqrt(100000)/500);
+        deathScore = 0;
+        for (int i = 0; i<this.totalDeath;i++){
+            deathScore -= Math.sqrt(i);
+        }
+        playerKilledScore = -((Math.sqrt(this.totalPlayerKill)*20)/Math.sqrt(5));
+        timePlayedScore = Math.sqrt((double)this.timePlayed/20/60/60)*(Math.sqrt(240)/1.2);
+        advancementScore = this.totalAdvancement;
+        distanceScore = Math.sqrt(this.totalDistance)*(Math.sqrt(500000)/2500);
+        distanceTransortationScore = Math.sqrt(this.totalTransportationDistance)*(Math.sqrt(750000)/3750);
+        minedScore = Math.sqrt(this.mineStat)*(Math.sqrt(200000)/1000);
+        craftScore = Math.sqrt(this.craftStat)*(Math.sqrt(50000)/250);
+        useScore = Math.sqrt(this.useStat)*(Math.sqrt(200000)/1000);
+        damageTakenScore = Math.sqrt(this.damageTaken)*(Math.sqrt(5000)/50);
+        damageDealtScore = Math.sqrt(this.damageDealt)*(Math.sqrt(100000)/1000);
+        damageBlockedByShieldScore = Math.sqrt(this.damageBlockedByShield)*(Math.sqrt(2000)/(40/3));
+        killEntityScore = Math.sqrt(this.killEntity)*(Math.sqrt(20000)/100);
+        raidWonScore = (Math.sqrt(this.raidWon)/(Math.log(this.raidWon+Math.exp(1)-1)+Math.sqrt(this.raidWon))*200);
+        tradedWithVillagersScore = 50*((Math.sqrt(this.tradedWithVillager)/(Math.log(this.tradedWithVillager+Math.exp(1)-1)+Math.sqrt(this.tradedWithVillager/500))));
+        animalBredScore = Math.sqrt(this.animalBred)*(Math.sqrt(500)/(10/3));
+        fishCaughtScore = 25*((Math.sqrt(10*this.fishCaught)/(Math.log(this.fishCaught+Math.exp(1)+500)+Math.sqrt(1/(this.fishCaught+1)))));
+        sumScore = (
+                mobKillScore+
+                jumpScore+
+                deathScore+
+                playerKilledScore+
+                timePlayedScore+
+                advancementScore+
+                distanceScore+
+                distanceTransortationScore+
+                minedScore+
+                craftScore+
+                useScore+
+                damageTakenScore+
+                damageDealtScore+
+                damageBlockedByShieldScore+
+                killEntityScore+
+                raidWonScore+
+                tradedWithVillagersScore+
+                animalBredScore+
+                fishCaughtScore);
+        /*
+        System.out.println("mobKillScore:"+mobKillScore);
+        System.out.println("jumpScore:"+jumpScore);
+        System.out.println("deathScore:"+deathScore);
+        System.out.println("playerKilledScore:"+playerKilledScore);
+        System.out.println("timePlayedScore:"+timePlayedScore);
+        System.out.println("advancementScore:"+advancementScore);
+        System.out.println("distanceScore:"+distanceScore);
+        System.out.println("distanceTransortationScore:"+distanceTransortationScore);
+        System.out.println("minedScore:"+minedScore);
+        System.out.println("craftScore:"+craftScore);
+        System.out.println("useScore:"+useScore);
+        System.out.println("damageTakenScore:"+damageTakenScore);
+        System.out.println("damageDealtScore:"+damageDealtScore);
+        System.out.println("damageBlockedByShieldScore:"+damageBlockedByShieldScore);
+        System.out.println("killEntityScore:"+killEntityScore);
+        System.out.println("raidWonScore:"+raidWonScore);
+        System.out.println("tradedWithVillagersScore:"+tradedWithVillagersScore);
+        System.out.println("animalBredScore:"+animalBredScore);
+        System.out.println("deathScore:"+deathScore);
+        System.out.println("advancementScore:"+advancementScore);
+        System.out.println("timeSinceLastDeath:"+this.timeSinceLastDeath);
+        System.out.println("timeSinceLastDeath:h"+this.timeSinceLastDeath/10/20/60/60/24);
+        System.out.println("sumScore:"+sumScore);*/
+        return (int) ((sumScore*(1+this.timeSinceLastDeath/20/60/60/24)));
+    }
+
     public int getTotalPlayerKill() {
         return totalPlayerKill;
     }
@@ -342,7 +431,7 @@ public class PlayerStats {
         return totalDistance;
     }
 
-    private String convertMeterToString(long distance){
+    public static String convertMeterToString(long distance){
         if (distance<1000){
             return String.valueOf(distance)+" m";
         }else {

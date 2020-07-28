@@ -44,7 +44,7 @@ public class Insert {
         PreparedStatement pstmt = this.conn.prepareStatement(SQL);
         pstmt.setString(1,playerStats.getDiscordID());
         pstmt.setString(2,playerStats.getPlayerUUID());
-        pstmt.setString(3,materialData.getName());
+        pstmt.setString(3,materialData.getId());
         pstmt.setInt(4,materialData.getCraftStat());
         pstmt.setInt(5,materialData.getUseStat());
         pstmt.setInt(6,materialData.getMineStat());
@@ -57,7 +57,7 @@ public class Insert {
         PreparedStatement pstmt = this.conn.prepareStatement(SQL);
         pstmt.setString(1,playerStats.getDiscordID());
         pstmt.setString(2,playerStats.getPlayerUUID());
-        pstmt.setString(3,entityData.getName());
+        pstmt.setString(3,entityData.getId());
         pstmt.setInt(4,entityData.getKillEntity());
         pstmt.setInt(5,entityData.getEntityKilledBy());
         pstmt.executeUpdate();
