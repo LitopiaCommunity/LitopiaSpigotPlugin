@@ -322,30 +322,6 @@ public class PlayerStats {
                 tradedWithVillagersScore+
                 animalBredScore+
                 fishCaughtScore);
-        /*
-        System.out.println("mobKillScore:"+mobKillScore);
-        System.out.println("jumpScore:"+jumpScore);
-        System.out.println("deathScore:"+deathScore);
-        System.out.println("playerKilledScore:"+playerKilledScore);
-        System.out.println("timePlayedScore:"+timePlayedScore);
-        System.out.println("advancementScore:"+advancementScore);
-        System.out.println("distanceScore:"+distanceScore);
-        System.out.println("distanceTransortationScore:"+distanceTransortationScore);
-        System.out.println("minedScore:"+minedScore);
-        System.out.println("craftScore:"+craftScore);
-        System.out.println("useScore:"+useScore);
-        System.out.println("damageTakenScore:"+damageTakenScore);
-        System.out.println("damageDealtScore:"+damageDealtScore);
-        System.out.println("damageBlockedByShieldScore:"+damageBlockedByShieldScore);
-        System.out.println("killEntityScore:"+killEntityScore);
-        System.out.println("raidWonScore:"+raidWonScore);
-        System.out.println("tradedWithVillagersScore:"+tradedWithVillagersScore);
-        System.out.println("animalBredScore:"+animalBredScore);
-        System.out.println("deathScore:"+deathScore);
-        System.out.println("advancementScore:"+advancementScore);
-        System.out.println("timeSinceLastDeath:"+this.timeSinceLastDeath);
-        System.out.println("timeSinceLastDeath:h"+this.timeSinceLastDeath/10/20/60/60/24);
-        System.out.println("sumScore:"+sumScore);*/
         return (int) ((sumScore*(1+this.timeSinceLastDeath/20/60/60/24)));
     }
 

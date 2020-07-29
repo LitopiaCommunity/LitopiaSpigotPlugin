@@ -66,8 +66,6 @@ public class Update {
                 " totalScore = (?)," +
                 " lastUpdate = now()" +
                 " where idDiscord = (?) and minecraftUUID = (?) and acceptedate is not null" ;
-        System.out.println(playerStats.getDiscordID());
-        System.out.println(playerStats.getPlayerUUID());
         PreparedStatement pstmt = this.conn.prepareStatement(SQL);
         pstmt.setString(1,playerStats.getUsername());
         pstmt.setString(2,playerStats.getTimePlayedInString());
