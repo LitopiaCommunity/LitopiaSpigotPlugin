@@ -8,24 +8,20 @@ import fr.litopia.bukkit.models.EntityData;
 import fr.litopia.bukkit.models.MaterialData;
 import fr.litopia.postgres.DBConnection;
 import fr.litopia.postgres.Insert;
-import fr.litopia.postgres.Select;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.security.auth.login.LoginException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class Main extends JavaPlugin {
@@ -93,6 +89,7 @@ public class Main extends JavaPlugin {
             this.jda.addEventListener(new Leaderboard(this));
             this.jda.addEventListener(new RejectCandidature(this));
             this.jda.addEventListener(new ResetCandidature(this));
+            this.jda.addEventListener(new MemberStats(this));
         } catch (LoginException e) {
             e.printStackTrace();
         }

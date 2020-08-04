@@ -5,10 +5,10 @@ import fr.litopia.postgres.DBConnection;
 import fr.litopia.postgres.Select;
 import fr.litopia.postgres.Update;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.RestAction;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,6 +56,7 @@ public class AcceptCandidature extends ListenerAdapter {
                                 U.acceptMembers(discordMember.getId());
                                 plugin.addToWhiteListe(member.getString("minecraftnickname"));
                                 event.getChannel().sendMessage("**:white_check_mark: le membre à bien était ajouter à la whiteliste**").queue();
+                                event.getGuild().getTextChannelById("725847179469520909").sendMessage("@everyone Veuillez acceuilir notre nousveau membre : <@"+discordMember.getId()+">").queue();
 
                             } else {
                                 event.getChannel().sendMessage("**:warning: <@" + event.getMessage().getMentionedUsers().get(0).getId() + "> à été refusée et ne peut être accepter.**").queue();

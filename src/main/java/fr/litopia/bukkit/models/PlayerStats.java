@@ -322,7 +322,7 @@ public class PlayerStats {
                 tradedWithVillagersScore+
                 animalBredScore+
                 fishCaughtScore);
-        return (int) ((sumScore*(1+this.timeSinceLastDeath/20/60/60/24)));
+        return (int) ((sumScore*(1+this.timeSinceLastDeath/20/60/60/24/10)));
     }
 
     public int getTotalPlayerKill() {

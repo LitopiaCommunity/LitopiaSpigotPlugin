@@ -220,4 +220,65 @@ public class Select {
         ResultSet rs =  pstmt.executeQuery();
         return rs;
     }
+
+    public int countMembers() throws SQLException{
+        String SQL = "select count(*) from members where acceptedate IS NOT NULL";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public ResultSet getInactifListMembers() throws SQLException{
+        String SQL = "select minecraftnickname, discordnickname from members where lastupdate <= now()-interval '7 days'";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        return rs;
+    }
+
+    public int countActiveMembers() throws SQLException{
+        String SQL = "select count(*) from members where  lastupdate BETWEEN now()-interval '7 days' and now();";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public ResultSet getActifMembers() throws SQLException{
+        String SQL = "select minecraftnickname,discordnickname from members where lastupdate BETWEEN now()-interval '7 days' and now();";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        return rs;
+    }
+
+    public int countRejectMembers() throws SQLException{
+        String SQL = "select count(*) from members where rolename = 'Refuser'";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public ResultSet getRejectMembers() throws SQLException{
+        String SQL = "select minecraftnickname,discordnickname from members where rolename = 'Refuser';";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        return rs;
+    }
+
+    public int countAwaitVotesMembers() throws SQLException{
+        String SQL = "select count(*) from members where acceptedate is null and rolename is null";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        rs.next();
+        return rs.getInt(1);
+    }
+
+
+    public ResultSet getAwaitVotesMembers() throws SQLException{
+        String SQL = "select minecraftnickname,discordnickname from members where acceptedate is null and rolename is null;";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        ResultSet rs =  pstmt.executeQuery();
+        return rs;
+    }
 }
