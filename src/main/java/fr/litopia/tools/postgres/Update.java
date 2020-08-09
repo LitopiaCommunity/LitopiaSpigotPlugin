@@ -1,4 +1,4 @@
-package fr.litopia.postgres;
+package fr.litopia.tools.postgres;
 
 import fr.litopia.bukkit.models.EntityData;
 import fr.litopia.bukkit.models.MaterialData;

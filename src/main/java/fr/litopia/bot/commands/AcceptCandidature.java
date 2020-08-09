@@ -1,9 +1,9 @@
 package fr.litopia.bot.commands;
 
 import fr.litopia.bukkit.Main;
-import fr.litopia.postgres.DBConnection;
-import fr.litopia.postgres.Select;
-import fr.litopia.postgres.Update;
+import fr.litopia.tools.postgres.DBConnection;
+import fr.litopia.tools.postgres.Select;
+import fr.litopia.tools.postgres.Update;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;

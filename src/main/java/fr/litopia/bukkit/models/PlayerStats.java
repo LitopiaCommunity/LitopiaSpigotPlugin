@@ -1,10 +1,10 @@
 package fr.litopia.bukkit.models;
 
 import fr.litopia.bukkit.Main;
-import fr.litopia.postgres.DBConnection;
-import fr.litopia.postgres.Insert;
-import fr.litopia.postgres.Select;
-import fr.litopia.postgres.Update;
+import fr.litopia.tools.postgres.DBConnection;
+import fr.litopia.tools.postgres.Insert;
+import fr.litopia.tools.postgres.Select;
+import fr.litopia.tools.postgres.Update;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;

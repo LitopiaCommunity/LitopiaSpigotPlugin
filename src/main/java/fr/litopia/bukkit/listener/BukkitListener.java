@@ -3,12 +3,12 @@ package fr.litopia.bukkit.listener;
 import fr.litopia.bot.action.TchatActions;
 import fr.litopia.bukkit.Main;
 import fr.litopia.bukkit.models.PlayerStats;
+import fr.litopia.bukkit.scripts.Votes;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -30,6 +30,11 @@ public class BukkitListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e){
         String msg = ":anchor: **"+e.getPlayer().getDisplayName()+" vient de rejoindre Litopia** ["+ Bukkit.getOnlinePlayers().size()+"/"+Bukkit.getMaxPlayers()+"]";
         this.tchatActions.sendBasicBotMessage(msg);
+        try {
+            Votes.check(e.getPlayer(),this.plugin);
+        }catch (Exception err){
+            err.printStackTrace();
+        }
     }
 
     @EventHandler()

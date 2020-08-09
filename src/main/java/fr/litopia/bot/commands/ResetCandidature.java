@@ -1,10 +1,9 @@
 package fr.litopia.bot.commands;
 
 import fr.litopia.bukkit.Main;
-import fr.litopia.postgres.DBConnection;
-import fr.litopia.postgres.Delete;
-import fr.litopia.postgres.Select;
-import fr.litopia.postgres.Update;
+import fr.litopia.tools.postgres.DBConnection;
+import fr.litopia.tools.postgres.Delete;
+import fr.litopia.tools.postgres.Select;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.ExecutionException;
 
 public class ResetCandidature extends ListenerAdapter {
     private static long tchatChanID;

@@ -1,14 +1,10 @@
-package fr.litopia.postgres;
+package fr.litopia.tools.postgres;
 
 import fr.litopia.bukkit.models.EntityData;
 import fr.litopia.bukkit.models.MaterialData;
 import fr.litopia.bukkit.models.PlayerStats;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.*;
 
 public class Select {
     private Connection conn;
@@ -33,6 +29,15 @@ public class Select {
         ResultSet rs = pstmt.executeQuery();
         rs.next();
         return rs.getString("minecraftuuid").replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})","$1-$2-$3-$4-$5");
+    }
+
+    public Timestamp getLastUpdate(String nickname) throws SQLException {
+        String SQL = "Select lastupdate from members where lower(minecraftnickname) = lower((?)) and acceptedate is not null;";
+        PreparedStatement pstmt = this.conn.prepareStatement(SQL);
+        pstmt.setString(1,nickname);
+        ResultSet rs = pstmt.executeQuery();
+        rs.next();
+        return rs.getTimestamp("lastupdate");
     }
 
     public String getDiscordID(String mcUUID) throws SQLException {

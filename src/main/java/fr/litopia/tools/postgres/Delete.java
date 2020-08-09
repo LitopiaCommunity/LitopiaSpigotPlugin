@@ -1,4 +1,4 @@
-package fr.litopia.postgres;
+package fr.litopia.tools.postgres;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

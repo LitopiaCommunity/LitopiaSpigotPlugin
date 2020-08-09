@@ -2,13 +2,12 @@ package fr.litopia.bot.models;
 
 import fr.litopia.bukkit.Main;
 import fr.litopia.bukkit.models.PlayerStats;
-import fr.litopia.postgres.DBConnection;
-import fr.litopia.postgres.Select;
+import fr.litopia.tools.postgres.DBConnection;
+import fr.litopia.tools.postgres.Select;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class LeaderboardData {
