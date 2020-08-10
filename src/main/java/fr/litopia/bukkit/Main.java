@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -114,7 +115,7 @@ public class Main extends JavaPlugin {
     }
 
     public void sendMessageToMinecraft(Message message){
-        Bukkit.broadcastMessage("<"+message.getAuthor().getName()+"> "+message.getContentRaw());
+        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE+""+ ChatColor.BOLD + message.getAuthor().getName() + ChatColor.GRAY+" : " + ChatColor.WHITE + message.getContentRaw());
     }
 
     public void addToWhiteListe(String Nickname) throws CommandException, ExecutionException, InterruptedException {

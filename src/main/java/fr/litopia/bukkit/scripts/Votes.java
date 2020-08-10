@@ -26,9 +26,6 @@ public class Votes {
         JSONObject data = HTTPRequest.get("https://www.liste-serveur.fr/api/hasVoted/4ce84376ef137c9be173b92845da9284/"+player.getDisplayName());
         if (data.getBoolean("hasVoted")){
             Timestamp lastVote = new Timestamp(data.getLong("lastVote")*1000);
-            System.out.println(data.getLong("lastVote"));
-            System.out.println(lastVote.toString());
-            System.out.println(lastUpdate.toString());
             if (lastUpdate.before(lastVote)){
                 if (PlayerTools.hasAvaliableSlot(player)) {
                     ItemStack itemStack = new ItemStack(Material.DIAMOND, 1);
