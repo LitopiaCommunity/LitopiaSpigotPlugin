@@ -31,7 +31,7 @@ dependencies {
     extraLibs  (group: 'org.postgresql', name: 'postgresql', version: '42.2.14')
     extraLibs  (group:'org.xerial', name:'sqlite-jdbc', version:'3.8.11.2')
     extraLibs  (group:'club.minnced',name:'discord-webhooks', version:'0.3.1')
-    extraLibs  ("net.dv8tion:JDA:4.1.1_165") {
+    extraLibs  ("net.dv8tion:JDA:4.2.0_168") {
         exclude module: "opus-java"
     }
     configurations.compile.extendsFrom(configurations.extraLibs)
@@ -45,6 +45,6 @@ jar {
 
 compileJava.options.encoding = 'UTF-8'
 
-jar.setDestinationDir(new File("E:\\Louis\\DEVMCSERVEUR\\plugins"))
+jar.setDestinationDir(new File("D:\\DEVMCSERVEUR\\plugins"))
 
 apply plugin: 'java'

@@ -83,7 +83,7 @@ public class Main extends JavaPlugin {
         }
 
         try {
-            this.jda = new JDABuilder(AccountType.BOT).setToken(config.getString("token")).addEventListeners(new TchatEvent(this)).build();
+            this.jda = JDABuilder.createDefault(config.getString("token")).build();
             this.tchatEvent = new TchatEvent(this);
             this.jda.addEventListener(new Stats(this));
             this.jda.addEventListener(new AcceptCandidature(this));
