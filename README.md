@@ -1,5 +1,5 @@
 # LitopiaSpigotPlugin
-Plugin minecraft d'api vers web services de l'infrastructure de Litopia
+Plugin minecraft de gestion de l'infrastructure de Litopia
 
 ### Features
 * Gestion des candidatures
